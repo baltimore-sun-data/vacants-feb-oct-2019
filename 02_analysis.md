@@ -95,6 +95,8 @@ site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554c
 Per the Baltimore City Department of Housing and Community Development,
 vacant lots are tagged with “Y” in the column `NO_IMPRV`. Count the
 number of distinct vacant lots by removing duplicate `BLOCKLOT` values.
+Note that these files are not included in the GitHub repo as they were
+too large to upload.
 
 ``` r
 parcel <- st_read('input/Real_Property/Real_Property.shp')

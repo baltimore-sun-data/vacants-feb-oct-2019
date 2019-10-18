@@ -27,6 +27,8 @@ by the Baltimore City Department of Housing & Community Development.
 
 The parcel boundaries are provided on the City of Baltimore’s [Open GIS
 site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0).
+Note that these files are not included in the GitHub repo as they were
+too large to upload.
 
 ``` r
 feb <- read_csv('input/vacants_feb7_2019.csv')

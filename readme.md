@@ -4,11 +4,11 @@
 
 By [Christine Zhang](mailto:czhang@baltsun.com)
 
-TThe Baltimore Sun analyzed data on vacant buildings for an Oct. 18, 2019 story titled ["Baltimore is furiously knocking down vacant houses —  but can’t keep up as new ones go empty"](https://www.baltimoresun.com/politics/bs-md-ci-vacants-demolition-progress-20191018-mw3cb5vlbjb4dmnxlbjvjg7tdy-story.html).
+The Baltimore Sun analyzed data on the ebb and flow of vacant buildings between Feb. 2019 and Oct. 2019 for an Oct. 18, 2019 story titled ["Baltimore is furiously knocking down vacant houses —  but can’t keep up as new ones go empty"](https://www.baltimoresun.com/politics/bs-md-ci-vacants-demolition-progress-20191018-mw3cb5vlbjb4dmnxlbjvjg7tdy-story.html).
 
-The Sun's findings and analysis are available in the "analysis" markdown file in this repository: [`02_analysis.md`](xxxx). The data was cleaned nd pre-processed prior to analysis. For more information, see [`01_processing.md`](xxx).
+The Sun's findings and analysis are available in the "analysis" markdown file in this repository: [`02_analysis.md`](https://github.com/baltimore-sun-data/vacants-feb-oct-2019/blob/master/02_analysis.md). The data was cleaned and pre-processed prior to analysis. For more information, see [`01_processing.md`](https://github.com/baltimore-sun-data/vacants-feb-oct-2019/blob/master/01_processing.md).
 
-If you'd like to run the code yourself in R, you can download the R Markdown files [`01_processing.Rmd`](xxxx) and [`02_analysis.Rmd`](xxxx) along with the data in the [`input`](xxx) folder.
+If you'd like to run the code yourself in R, you can download the R Markdown files [`01_processing.Rmd`](https://github.com/baltimore-sun-data/vacants-feb-oct-2019/blob/master/01_processing.Rmd) and [`02_analysis.Rmd`](https://github.com/baltimore-sun-data/vacants-feb-oct-2019/blob/master/02_analysis.Rmd) along with the data in the [`input`](https://github.com/baltimore-sun-data/vacants-feb-oct-2019/tree/master/input) folder. Note the parcel boundaries files were too large to be uploaded into the `input` folder; they can be found on the City of Baltimore's [Open GIS site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0).
 
 https://twitter.com/baltsundata
 

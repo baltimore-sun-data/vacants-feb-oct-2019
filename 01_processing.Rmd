@@ -29,7 +29,7 @@ library('sf')
 
 Data on vacant buildings as of February 7, 2019 was downloaded from Open Baltimore for a [previous story](https://github.com/baltimore-sun-data/vacants-demolish-analysis/). Data on vacant buildings as of October 10, 2019 was provided by the Baltimore City Department of Housing & Community Development. An updated list of the status of vacants scheduled for demolition was also provided by the Baltimore City Department of Housing & Community Development.
 
-The parcel boundaries are provided on the City of Baltimore's [Open GIS site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0).
+The parcel boundaries are provided on the City of Baltimore's [Open GIS site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0). Note that these files are not included in the GitHub repo as they were too large to upload.
 
 ```{r reading, warning = F, message = F}
 feb <- read_csv('input/vacants_feb7_2019.csv')

@@ -70,7 +70,7 @@ print(sum(vacants_feb_oct$became_vacant))
 
 ### Finding: Records also show more than 19,500 empty lots citywide.
 
-The parcel boundaries are provided on the City of Baltimore's [Open GIS site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0). Per the Baltimore City Department of Housing and Community Development, vacant lots are tagged with "Y" in the column `NO_IMPRV`. Count the number of distinct vacant lots by removing duplicate `BLOCKLOT` values.
+The parcel boundaries are provided on the City of Baltimore's [Open GIS site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0). Per the Baltimore City Department of Housing and Community Development, vacant lots are tagged with "Y" in the column `NO_IMPRV`. Count the number of distinct vacant lots by removing duplicate `BLOCKLOT` values. Note that these files are not included in the GitHub repo as they were too large to upload.
 
 ```{r}
 parcel <- st_read('input/Real_Property/Real_Property.shp')
