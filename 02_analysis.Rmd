@@ -1,0 +1,197 @@
+---
+title: "Analysis: Baltimore's vacant buildings from February to mid-October 2019"
+author: "Christine Zhang"
+date: "10/18/2019"
+output:   
+  md_document:
+    variant: markdown_github
+---
+
+## Analysis: Baltimore's vacant buildings from February to mid-October 2019
+
+The Baltimore Sun analyzed data on vacant buildings for an Oct. 18, 2019 story titled ["Baltimore is furiously knocking down vacant houses —  but can’t keep up as new ones go empty"](https://www.baltimoresun.com/politics/bs-md-ci-vacants-demolition-progress-20191018-mw3cb5vlbjb4dmnxlbjvjg7tdy-story.html).
+
+Here are the key statistics reported in the story:
+
+- In February, city records listed 16,724 vacant buildings. Eight months later, the figure was 16,577.
+- From February to mid-October, 1,507 properties came off the vacant buildings list — either because they were demolished or rehabilitated. Meanwhile, housing inspectors declared another 1,360 legally vacant.
+- Records also show more than 19,500 empty lots citywide.
+- Broadway East, a square of land in East Baltimore bisected by North Gay Street, saw the most rapid change. By this fall, it had 124 fewer vacants than it did last winter.
+- In Ellwood Park/Monument, Madison-Eastend and McElderry Park, there were 27 more vacant houses in September than there were in February, according to the city’s records.
+- In six neighborhoods that form a rough wedge cutting across Southwest Baltimore, there were 74 more properties vacant in September than seven months earlier. Those neighborhoods are Allendale, Carroll-South Hilton, Carrollton Ridge, Edmondson Village, Millhill and Shipley Hill.
+- Across the city, 87 neighborhoods saw the numbers of vacants fall — with those targeted by the housing department for demolitions showing the steepest decreases — while 92 areas saw an overall increase.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load R libraries
+
+```{r loading, warning=F, message=F}
+library('tidyverse')
+library('janitor')
+library('sf')
+```
+
+### Finding: In February, city records listed 16,724 vacant buildings. Eight months later, the figure was 16,577.
+
+Read in the data file created via the pre-processing code: `01_processing.Rmd` and save into a dataframe called `vacants_feb_oct`.
+
+```{r reading, warning = F, message = F}
+vacants_feb_oct <- read_csv('output/vacants_feb_oct.csv')
+```
+
+`vacant_in_feb` = 1 if the building was vacant in February; 0 if not. Sum this column to get the total number of vacants in February.
+
+```{r}
+print(sum(vacants_feb_oct$vacant_in_feb))
+```
+
+`vacant_in_oct` = 1 if the building was vacant in October; 0 if not. Sum this column to get the total number of vacants in October.
+
+```{r}
+print(sum(vacants_feb_oct$vacant_in_oct))
+```
+
+### From February to mid-October, 1,507 properties came off the vacant buildings list — either because they were demolished or rehabilitated. Meanwhile, housing inspectors declared another 1,360 legally vacant.
+
+`no_longer_vacant` = 1 if the building was vacant in February and no longer vacant in October. Sum this column to get the total number of properties that came off the vacant buildings list.
+
+
+```{r}
+print(sum(vacants_feb_oct$no_longer_vacant))
+```
+
+`became_vacant` = 1 if the building was not vacant in February and was vacant in October. Sum this column to get the total number of properties that were declared legally vacant. 
+
+```{r}
+print(sum(vacants_feb_oct$became_vacant))
+```
+
+### Finding: Records also show more than 19,500 empty lots citywide.
+
+The parcel boundaries are provided on the City of Baltimore's [Open GIS site](http://gis-baltimore.opendata.arcgis.com/datasets/b41551f53345445fa05b554cd77b3732_0). Per the Baltimore City Department of Housing and Community Development, vacant lots are tagged with "Y" in the column `NO_IMPRV`. Count the number of distinct vacant lots by removing duplicate `BLOCKLOT` values.
+
+```{r}
+parcel <- st_read('input/Real_Property/Real_Property.shp')
+parcel %>% as.data.frame() %>% select(BLOCKLOT, NO_IMPRV) %>% distinct() %>% filter(NO_IMPRV == 'Y') %>% nrow()
+```
+
+### Finding: Broadway East, a square of land in East Baltimore bisected by North Gay Street, saw the most rapid change. By this fall, it had 124 fewer vacants than it did last winter.
+
+Group `vacants_feb_oct` by neighborhood and sum the `chg` column to see the total change in vacants from Feb to Oct. by neighborhood and filter to Broadway East.
+
+```{r}
+vacants_feb_oct %>% group_by(nbrhd) %>% 
+  summarise(chg = sum(chg),
+            became = sum(became_vacant),
+            no_longer_vacant = sum(no_longer_vacant),
+            stayed = sum(stayed_vacant)) %>% 
+  filter(nbrhd == 'broadway east')
+```
+
+### Finding: In Ellwood Park/Monument, Madison-Eastend and McElderry Park, there were 27 more vacant houses in September than there were in February, according to the city’s records.
+
+Group `vacants_feb_oct` by neighborhood and sum the `chg` column to see the total change in vacants from Feb to Oct. by neighborhood and filter to Ellwood Park/Monument, Madison-Eastend and McElderry Park. 
+
+```{r}
+vacants_feb_oct %>% group_by(nbrhd) %>% 
+  filter(grepl('ellwood',  nbrhd) |
+         grepl('eastend',  nbrhd) |
+         grepl('mcelderry',  nbrhd)) %>%
+  summarise(chg = sum(chg),
+            became = sum(became_vacant),
+            no_longer_vacant = sum(no_longer_vacant),
+            stayed = sum(stayed_vacant)) 
+```
+Each has 9 more vacant buildings.
+
+### Finding: In six neighborhoods that form a rough wedge cutting across Southwest Baltimore, there were 74 more properties vacant in September than seven months earlier. Those neighborhoods are Allendale, Carroll-South Hilton, Carrollton Ridge, Edmondson Village, Millhill and Shipley Hill.
+
+Filter to those six neighborhoods.
+
+```{r}
+vacants_feb_oct %>% 
+  filter(grepl('allendale',  nbrhd) |
+         grepl('carroll-south h',  nbrhd) |
+         grepl('carrollton',  nbrhd) | 
+         grepl('edmondson villa',  nbrhd) | 
+         grepl('millhill',  nbrhd) | 
+         grepl('shipley',  nbrhd) ) %>%
+  summarise(chg = sum(chg),
+            became = sum(became_vacant),
+            no_longer_vacant = sum(no_longer_vacant),
+            stayed = sum(stayed_vacant))
+```
+```{r}
+neighborhoods <- st_read('input/Maryland_Baltimore_City_Neighborhoods/Maryland_Baltimore_City_Neighborhoods.shp')
+neighborhoods <- neighborhoods %>% mutate(selected_neighborhoods = ifelse(LABEL == 'Allendale' | LABEL == 'Carroll-South Hilton' | 
+                                                            LABEL == 'Carrollton Ridge' | LABEL == 'Edmondson Village' | 
+                                                            LABEL == 'Millhill' | LABEL == 'Shipley Hill'|
+                                                            LABEL == 'McElderry Park' | LABEL == 'Ellwood Park/Monument' |
+                                                            LABEL == 'Madison-Eastend', 'yes', 'no'))
+
+ggplot(neighborhoods) + 
+  geom_sf(aes(fill = selected_neighborhoods),
+          color = "#58595b", size = 0.2) +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent'), 
+        legend.position = 'none') +
+  scale_fill_manual(values  = c('#E5E5E5', 
+                                 '#daa520')) 
+
+ggsave('output/map_neighborhoods.eps', width = 8, height = 6) # save to eps for Illustrator
+  
+```
+The neighborhoods form a rough wedge cutting across Southwest Baltimore as shown in the map above.
+
+### Finding: Across the city, 87 neighborhoods saw the numbers of vacants fall — with those targeted by the housing department for demolitions showing the steepest decreases — while 92 areas saw an overall increase.
+
+Group by neighborhood and calculate the total change since February for each neighborhood. Create a column, `more_or_fewer`, to categorize whether the neighborhood has more, fewer or the same number of vacants. Group by this column and summarize to see the number of neighborhoods with more vacants or fewer vacants since Feb.
+
+```{r}
+vacants_feb_oct %>% group_by(nbrhd) %>% 
+  summarise(total_vacant_in_feb = sum(vacant_in_feb),
+            total_vacant_in_oct = sum(vacant_in_oct),
+            total_chg_since_feb = sum(chg),
+            total_stayed_vacant = sum(stayed_vacant),
+            total_no_longer_vacant = sum(no_longer_vacant),
+            total_became_vacant = sum(became_vacant)) %>% 
+  arrange(desc(total_chg_since_feb))  %>% 
+  ungroup() %>%
+  mutate(more_or_fewer = case_when(total_chg_since_feb < 0 ~ 'fewer', 
+                                   total_chg_since_feb > 0 ~ 'more',
+                                   total_chg_since_feb == 0 ~ 'same')) %>% 
+  group_by(more_or_fewer) %>% summarise(n = n()) 
+```
+
+### Map: vacant buildings that came off the vacants list & that were declared legally vacant, side-by-side
+
+Read in the spatial dataset saved in `01_processing.Rmd`.
+
+```{r}
+vacants_spatial <- st_read('output/vacants_spatial_oct.shp')
+neighborhoods.transform <- neighborhoods %>% st_transform(crs = 4326) # transform to same coordinates system
+
+vacants_spatial <- vacants_spatial %>% mutate(cat = case_when(styd_vc == 1 ~ 'stayed_vacant',
+                                              bcm_vcn == 1 ~ 'was_declared_vacant',
+                                              n_lngr_ == 1 ~ 'came_off_vacants_list'))
+
+ggplot(neighborhoods.transform) +
+  geom_sf(color = "#939598", size = 0.2) +
+  geom_point(data = vacants_spatial %>% filter(cat != 'stayed_vacant'), 
+             aes(x = longitd, 
+                 y = latitud,
+                 color = cat), alpha = .5) +
+  coord_sf() +
+  facet_wrap(~cat) +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent'), legend.position = 'none') +
+  scale_color_manual(values  = c('#01665e', 
+                                 '#8c510a'))
+
+ggsave('output/map_oct.pdf', width = 8, height = 6) # save to PDF for Illustrator
+```
+
+
+

@@ -1,0 +1,6 @@
+*/*.eps
+*/*.pdf
+*/*.ai
+*.DS_Store
+*Rhistory
+input/Real_Property/*
