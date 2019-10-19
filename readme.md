@@ -1,4 +1,4 @@
-# Baltimore city carjackings analysis 2019
+# Baltimore city vacants analysis Feb.-Oct. 2019
 
 ## Baltimore Sun analysis
 
